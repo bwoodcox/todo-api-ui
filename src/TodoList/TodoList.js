@@ -1,16 +1,28 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import TodoForm from './TodoForm';
+import TodoItem from './TodoItem';
 
-const api_url = 'http://localhost:3001';
+const apiURL = 'http://localhost:3001/api/v1/todos';
 
 const TodoList = () => {
+	const [items, setItems] = useState([]);
+
+	useEffect(() => {
+		fetch(apiURL).then((response) => response.json()).then((response_items) => setItems(response_items.reverse()));
+	}, []);
+
+	const updateTodoList = (item) => {
+		let _items = [...items];
+		_items.unshift(item);
+		console.log(items);
+		console.log(_items);
+		setItems(_items);
+	};
+
 	return (
 		<div>
-			<TodoForm />
-			<ul>
-				<li>Todo #1</li>
-				<li>Todo #2</li>
-			</ul>
+			<TodoForm apiURL={apiURL} updateList={updateTodoList} />
+			<ul id="todo_list">{items.map((item) => <TodoItem key={item.id} item={item} />)}</ul>
 		</div>
 	);
 };
